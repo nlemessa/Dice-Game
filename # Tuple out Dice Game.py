@@ -18,75 +18,58 @@ player_name()
 
 # User rolls dice 
 def dice_rolls():
-    return random.choices([1, 2, 3, 4, 5, 6], k=3)
-dice = dice_rolls()
-print(f"You rolled: {dice}")
-score = 0
-
-def count_howmanytimes(dice):
     """
-    Count how many times a value on a die is rolled
+    Simulates rolling three six-sided dice
+    Then return a set of three numbers that are the outcomes of the dice roll
     """
-    dice_list = list(dice)
-    return [dice_list.count(value) for value in range(1, 7)]
+    roll1 = random.randint(1,6)
+    roll2 = random.randint(1,6)
+    roll3 = random.randint(1,6)
+    return [roll1, roll2, roll3]
 
-while True:
-    if dice[0] == dice[1] == dice[2]:
-        print("You have tupled out! You scored 0 points." )
-        score = 0
-        break 
-
-    fixed = []
-    unfixed = []
-    if dice[0] == dice[1] or dice[0] == dice[2]:
-        fixed.append(dice[0])
-    if dice[1] == dice[2]:
-        fixed.append(dice[1])
-    
-
-# Counting how many times a number appears 
-
-my_rolls = dice_rolls()
-print("Dice rolls:", my_rolls)
-roll_counts = count_howmanytimes(my_rolls)
-print("Count of each number rolled:", roll_counts)
-
-#Calculating scores 
-def score_calculation(dice):
+# Check which dice can be rerolled
+def rerollable_dice(dice):
     """
-    Calculates the score from a dice roll and gives a sum of the numbers
-    A tuple that will indicate whether or not the player or computer has tupled out.
+    Finds which dice from the three can be rerolled.
     """
-    counts = count_howmanytimes(dice)
-    if max(counts) >= 3:  # Changed to check for 3 or more of any number
-        return 0, True
-    return sum(dice), False 
+    if dice [0] == dice[1]:
+        return [2]
+    elif dice [0] == dice[2]:
+        return[1]
+    elif dice [1] == dice [2]:
+        return [0]
+    return[0, 1, 2]
 
 def play_turn(player_name):
     """
     Play a turn for the player
     Gives the player and computer the decision to keep rolling or stop
     """
-    current_dice = dice_rolls()
-    print(f"\n{player_name}'s initial roll: {current_dice}")
+    print(f"\n{player_name}'s turn!")
+    dice = dice_rolls()
+    print(f"\n{player_name}'s initial roll: {dice}")
+
+    turn_score = 0
 # Check if there is a tuple out 
     while True:
-        turn_score, tupled_out = score_calculation(current_dice)
-        if tupled_out:
-            print(f"{player_name} tupled out with {current_dice}! Scored 0 points.")
-            turn_score = 0 
-            break
-        print(f"{player_name}'s current score: {turn_score}")
-        # Give the option to the player whether or not they want to keep rolling
-        preference = input("Do you want to continue rolling dice? (yes/no): ").lower()
-        if preference =='no':
-            print(f"{player_name} ends turn with {turn_score} points.")
-            score = sum(dice)
-            break
-        else: 
-            print(f"Continuing turn. Current score: {turn_score}")
-            current_dice = dice_rolls()
-            print(f"New roll: {current_dice}")
+       if dice [0] == dice[1] == dice[2]:
+           print("You tupled out! 0 points scored.")
+           return 0
+       turn_score = sum(dice)
+       print(f"Current dice score: {turn_score}")
+
+       rerollable = rerollable_dice(dice)
+       if not rerollable:
+           print("No dice can be rolled. Turn is over!")
+           break
+       preference = input("Do you want to continue rolling dice? (yes/no): ").lower()
+       if preference != 'yes':
+           print(f"{player_name} ends turn with {turn_score} points.")
+           break
+    else: 
+        print(f"Continuing turn. Current score: {turn_score}")
+        current_dice = dice_rolls()
+        print(f"New roll: {current_dice}")
     return(turn_score)
 
 def main():
